@@ -10,6 +10,8 @@ import json
 from PIL import Image, ImageOps, ImageDraw
 from source.meta.common import common
 
+#import 'master' image from spritelib?
+#from source.meta.classes.spritelib import master
 
 class Layout():
     def __init__(self, filename):
@@ -243,8 +245,17 @@ class Layout():
 
             collage = self.make_horizontal_collage(this_row_images)
             all_collages.append(collage)
+        
+        full_layout_collage = self.make_vertical_collage(all_collages)
+        
+        # load the original PNG and use a mask to grab everything outside 
+        # the frame and paste it back ontop of the collage
 
-        full_layout = self.make_vertical_collage(all_collages)
+        oob_mask = Image.open(r"resources\app\snes\metroid3\samus\sheets\samus-oob-mask.png")
+        if oob_mask.width == full_layout_collage.width:          
+            full_layout = Image.composite(master, full_layout_collage, oob_mask) #not sure how to call the 'master' image variable from spritelib.py
+        else:
+            full_layout = full_layout_collage
         return full_layout
 
     def extract_all_images_from_master(self, master_image):
