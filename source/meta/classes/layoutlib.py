@@ -10,9 +10,6 @@ import json
 from PIL import Image, ImageOps, ImageDraw
 from source.meta.common import common
 
-#import 'master' image from spritelib?
-#from source.meta.classes.spritelib import master
-
 class Layout():
     def __init__(self, filename):
         with open(filename) as inFile:
@@ -215,7 +212,7 @@ class Layout():
             current_y += image.size[1]
         return collage
 
-    def export_all_images_to_PNG(self, all_images, master_palette):
+    def export_all_images_to_PNG(self, all_images, master_palette, filename):
         all_collages = []
         for row in self.get_rows():
 
@@ -251,9 +248,10 @@ class Layout():
         # load the original PNG and use a mask to grab everything outside 
         # the frame and paste it back ontop of the collage
 
-        oob_mask = Image.open(r"resources\app\snes\metroid3\samus\sheets\samus-oob-mask.png")
-        if oob_mask.width == full_layout_collage.width:          
-            full_layout = Image.composite(master, full_layout_collage, oob_mask) #not sure how to call the 'master' image variable from spritelib.py
+        samus_mask = Image.open(r"resources\app\snes\metroid3\samus\sheets\samus_mask.png")
+        if samus_mask.width == full_layout_collage.width:
+            original_image = Image.open(filename).convert("RGBA")
+            full_layout = Image.composite(original_image, full_layout_collage, samus_mask)
         else:
             full_layout = full_layout_collage
         return full_layout
